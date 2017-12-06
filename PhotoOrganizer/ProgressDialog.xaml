@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="PhotoOrganizer.ProgressDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PhotoOrganizer"
+             mc:Ignorable="d">
+    <StackPanel Orientation="Vertical">
+        <TextBlock Text="{Binding Title, Mode=OneWay}" TextWrapping="Wrap" />
+        <ProgressBar Height="30" MinWidth="200" 
+                     IsIndeterminate="{Binding IsIndeterminate, Mode=OneTime}" 
+                     Minimum="{Binding Minimum, Mode=OneTime}" 
+                     Maximum="{Binding Maximum, Mode=OneTime}" 
+                     Value="{Binding Value, Mode=OneWay}" />
+        <Button Content="Cancel" Command="{Binding CancelCommand}" 
+                HorizontalAlignment="Right" 
+                Margin="0 10 0 0"></Button>
+    </StackPanel>
+</UserControl>
+
+
+

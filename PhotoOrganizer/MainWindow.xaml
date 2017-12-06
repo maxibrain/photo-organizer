@@ -1,0 +1,100 @@
+﻿<Window x:Class="PhotoOrganizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PhotoOrganizer"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Project">
+                <MenuItem Header="New" Command="{Binding NewProjectCommand}"></MenuItem>
+                <MenuItem Header="Copy" Click="Copy_OnClick"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <ToolBar DockPanel.Dock="Top">
+            <Button Content="Up" Command="{Binding Project.ActiveFolder.UpCommand}"></Button>
+        </ToolBar>
+        <Grid>
+            <Grid DataContext="{Binding Project.ActiveFolder}">
+                <Grid.Resources>
+                    <collections:ArrayList x:Key="SelectedItems"></collections:ArrayList>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <DataGrid AllowDrop="True" ItemsSource="{Binding Items}" 
+                          SelectionChanged="Selector_OnSelectionChanged"
+                          AutoGenerateColumns="False" 
+                          SelectionUnit="FullRow"
+                          DragEnter="UIElement_OnDragEnter"
+                          Drop="UIElement_OnDrop" Grid.Column="0">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
+                            <MenuItem Header="Group in a new folder" Command="{Binding GroupCommand}" CommandParameter="{Binding Source={StaticResource SelectedItems}}"></MenuItem>
+                            <MenuItem Header="Adjust taken date..." Click="AdjustTakenDateMenuItem_OnClick"></MenuItem>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Name}" Header="Name" Width="*" IsReadOnly="True"></DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding OriginalName}" Header="Original Name" Width="*" IsReadOnly="True"></DataGridTextColumn>
+                        <DataGridTemplateColumn Header="Actions" Width="Auto" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Open" Command="{Binding OpenCommand}"></Button>
+                                        <Button Content="Remove" Command="{Binding RemoveCommand}"></Button>
+                                        <!--<Button Content="Rename" Click="RenameButton_OnClick"></Button>-->
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Grid Grid.Column="1">
+                    <Image x:Name="Preview"></Image>
+                    <TextBlock x:Name="PreviewError" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                </Grid>
+            </Grid>
+            
+            <local:ProgressDialog DataContext="{Binding CurrentOperation}">
+                <local:ProgressDialog.Style>
+                    <Style TargetType="local:ProgressDialog" BasedOn="{StaticResource DialogStyle}">
+                        <Style.Triggers>
+                            <Trigger Property="DataContext" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Visibility" Value="Visible" />
+                    </Style>
+                </local:ProgressDialog.Style>
+            </local:ProgressDialog>
+
+            <local:MessageBox DataContext="{Binding CurrentMessage}">
+                <local:MessageBox.Style>
+                    <Style TargetType="local:MessageBox" BasedOn="{StaticResource DialogStyle}">
+                        <Style.Triggers>
+                            <Trigger Property="DataContext" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding IsAcknowledged}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Visibility" Value="Visible" />
+                    </Style>
+                </local:MessageBox.Style>
+            </local:MessageBox>
+        </Grid>
+    </DockPanel>
+</Window>
+
+
+
